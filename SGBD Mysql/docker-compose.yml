@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+
+  Mysql:
+    image: mysql:8.0.36
+    container_name: BBDD
+    restart: always
+    command: --default-authentication-plugin=caching_sha2_password
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=gabriel123
+    volumes:
+      - mysql-db-BBDD:/var/lib/mysql
+volumes:
+  mysql-db-BBDD:
