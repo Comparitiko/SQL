@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS estacion (
 );
 
 CREATE TABLE IF NOT EXISTS muestra (
-	identificadorEstacion INTEGER,
+	identificadorEstacion INTEGER PRIMARY KEY,
     fecha DATE,
     temp_min DOUBLE,
     temp_max DOUBLE,
@@ -20,7 +20,6 @@ CREATE TABLE IF NOT EXISTS muestra (
     hum_max DOUBLE,
     vel_viento_min DOUBLE,
     vel_viento_max DOUBLE,
-    PRIMARY KEY(identificadorEstacion, fecha),
     FOREIGN KEY (identificadorEstacion) REFERENCES estacion(identificador)
     ON DELETE RESTRICT
     ON UPDATE RESTRICT
