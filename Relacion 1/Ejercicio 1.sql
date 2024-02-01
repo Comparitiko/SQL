@@ -22,6 +22,10 @@ CREATE TABLE IF NOT EXISTS relacion (
     id_prof CHAR(3),
     nota DOUBLE,
     PRIMARY KEY(id_al, id_prof),
-    FOREIGN KEY (id_al) REFERENCES alumnos(id_al),
-    FOREIGN KEY (id_prof) REFERENCES profesores(id_prof)
-)
+    FOREIGN KEY (id_al) REFERENCES alumnos(id_al)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
+    FOREIGN KEY (id_prof) REFERENCES profesores(id_prof) 
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE
+);
