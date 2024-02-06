@@ -32,14 +32,14 @@ SHOW TABLES;
 DESCRIBE articulos;
 
 /* 7. Introduce los siguientes datos en cada tabla */
-insert into fabricantes (clave_fabricante, nombre) values
+INSERT INTO fabricantes (clave_fabricante, nombre) VALUES
 (1, "Kingston"),
 (2, "Adata"),
 (3, "Logitech"),
 (4, "Lexar"),
 (5, "Seagate");
 
-insert into articulos (clave_articulo, nombre, precio, clave_fabricante) values
+INSERT INTO articulos (clave_articulo, nombre, precio, clave_fabricante) VALUES
 (1, "Teclado", 100, 3),
 (2, "Disco duro 300gb", 500, 5),
 (3, "Mouse", 80, 3),

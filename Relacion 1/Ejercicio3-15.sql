@@ -62,12 +62,13 @@ JOIN profesores p ON p.nom_prof = "CARMEN TORRES"
 WHERE r.nota >= 5;
 
 /* 14.- Mostrar el alumno/s que haya obtenido la nota más alta con ‘P01’ */
-SELECT a.nom_al AS nombre_alumno
+SELECT a.nom_al AS nombre_alumno, r.nota, r.id_prof
 FROM alumnos a
 JOIN relacion r ON a.id_al = r.id_al
-JOIN profesores p ON p.id_prof = "P01"
-ORDER BY r.nota DESC
-LIMIT 1;
+WHERE r.id_prof LIKE 'P01'
+AND r.nota = (
+	SELECT max(nota) FROM relacion WHERE id_prof LIKE "P01"
+);
 
 /* 15.- Mostrar los alumnos (nombre y codigo) que hayan aprobado todo.  */
 SELECT DISTINCT a.id_al AS id_alumno, a.nom_al AS nombre_alumno
