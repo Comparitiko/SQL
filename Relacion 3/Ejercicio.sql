@@ -53,6 +53,7 @@ CREATE TABLE IF NOT EXISTS relacion2 (
     FOREIGN KEY (id_per) REFERENCES periodos(id_per)
     ON DELETE CASCADE
 );
+
 INSERT INTO provincias VALUES
 ('P01', 'Sevilla'),
 ('P02', 'Granada'),
@@ -211,18 +212,77 @@ JOIN relacion2 r ON car.id_cart = car.id_cart
 JOIN ciudades c ON r.id_ciud = c.id_ciud
 WHERE r.id_per = 'PE4';
 /* 13.- CARTEROS QUE HAN TRABAJADO EN LA CIUDAD CIUDAD1 Y FECHA DE INICIO Y FIN EN QUE LO HAN HECHO. */
-/*Haciendo esto*/
-SELECT DISTINCT car.nom_cart, c.nom_ciud
+SELECT DISTINCT car.nom_cart AS nombre_cartero, p.fecha_ini AS inicio, p.fecha_fin AS fin
 FROM carteros car
 JOIN relacion2 r ON car.id_cart = car.id_cart
+JOIN periodos p ON p.id_per = r.id_per
 JOIN ciudades c ON r.id_ciud = c.id_ciud
-WHERE r.id_per = 'PE4'
+WHERE c.nom_ciud = 'Ciudad1';
 /* 14.- CARTEROS QUE HAN TRABAJADO EN LA PROVINCIA DE ALMERIA NOMBRE DE ZONA Y CIUDAD Y FECHAS EN QUE LO HAN HECHO. */
+SELECT DISTINCT car.nom_cart AS nombre_cartero, p.fecha_ini AS inicio, p.fecha_fin AS fin
+FROM carteros car
+JOIN relacion2 r ON car.id_cart = car.id_cart
+JOIN periodos p ON p.id_per = r.id_per
+JOIN ciudades c ON r.id_ciud = c.id_ciud
+JOIN provincias pr ON c.id_prov = pr.id_prov
+WHERE pr.nom_prov LIKE 'Almeria';
 /* 15.- NUMERO DE HABITANTES DE CADA PROVINCIA. */
+SELECT SUM(c.num_hab) AS numero_habitantes, p.nom_prov AS provincia
+FROM ciudades c
+JOIN provincias p ON p.id_prov LIKE c.id_prov
+GROUP BY p.nom_prov;
 /* 16.- NOMBRE Y SUELDO DEL CARTERO QUE MÁS PERIODOS HA TRABAJADO */
-/* 17.- NOMBRE DE LACIUDAD QUE MAS CARTEROS HA TENIDO. */
+SELECT car.nom_cart AS nombre_cartero, car.sueldo, COUNT(p.id_per)
+FROM carteros car
+JOIN relacion2 r ON r.id_cart LIKE car.id_cart
+JOIN periodos p ON p.id_per = r.id_per
+GROUP BY car.nom_cart, car.sueldo
+ORDER BY COUNT(p.id_per) DESC
+LIMIT 1;
+/* 17.- NOMBRE DE LA CIUDAD QUE MAS CARTEROS HA TENIDO. */
+SELECT c.nom_ciud
+FROM ciudades c
+JOIN relacion2 r ON c.id_ciud LIKE r.id_ciud
+JOIN carteros car ON car.id_cart LIKE r.id_cart
+GROUP BY c.nom_ciud
+ORDER BY COUNT(car.id_cart) DESC
+LIMIT 1;
 /* 18.- NOMBRE DE LA ZONA QUE MAS CARTEROS HA TENIDO (Y Nº DE CARTEROS) */
+SELECT z.nom_zona AS nombre_zona, COUNT(car.id_cart) AS numero_carteros
+FROM zonas z
+JOIN relacion2 r ON r.id_zona LIKE z.id_zona
+JOIN carteros car ON car.id_cart LIKE r.id_cart
+GROUP BY z.nom_zona
+ORDER BY COUNT(car.id_cart) DESC
+LIMIT 1;
 /* 19.- NOMBRE/S Y SUELDO/S DEL CARTERO QUE HA REPARTIDO EN EL ESTE DE LA CIUDAD3. */
+SELECT car.nom_cart, car.sueldo
+FROM carteros car
+JOIN relacion2 r ON r.id_cart LIKE car.id_cart
+JOIN zonas z ON z.id_zona LIKE r.id_zona
+JOIN ciudades c ON c.id_ciud LIKE z.id_ciud
+WHERE c.nom_ciud LIKE 'Ciudad3'
+AND z.nom_zona LIKE 'Este';
 /* 20.- NOMBRE DE LOS CARTEROS QUE NO HAN TRABAJADO EN LA PROVINCIA DE SEVILLA */
+SELECT DISTINCT car.nom_cart
+FROM carteros car
+JOIN relacion2 r ON r.id_cart LIKE car.id_cart
+JOIN ciudades c ON c.id_ciud LIKE r.id_ciud
+JOIN provincias p ON p.id_prov LIKE c.id_prov
+WHERE p.nom_prov NOT LIKE 'Sevilla';
 /* 21.- NOMBRE Y SUELDO DE LOS CARTEROS QUE NO HAN TRABAJADO EN LA RIVERA DE LA CIUDAD4. */
+SELECT DISTINCT car.nom_cart
+FROM carteros car
+JOIN relacion2 r ON r.id_cart LIKE car.id_cart
+JOIN zonas z ON z.id_zona LIKE r.id_zona
+JOIN ciudades c ON c.id_ciud LIKE z.id_ciud
+WHERE z.nom_zona NOT LIKE 'Rivera'
+OR c.nom_ciud NOT LIKE 'Ciudad4';
 /* 22.- FECHA DE INICIO Y FIN DE LOS PERIODOS EN QUE MAS CARTEROS HAN TRABAJADO. */
+SELECT pe.fecha_ini, pe.fecha_fin
+FROM periodos pe
+JOIN relacion2 r ON r.id_per LIKE pe.id_per
+JOIN carteros car ON car.id_cart LIKE r.id_cart
+GROUP BY pe.fecha_ini, pe.fecha_fin
+ORDER BY COUNT(car.id_cart) DESC
+LIMIT 1;
