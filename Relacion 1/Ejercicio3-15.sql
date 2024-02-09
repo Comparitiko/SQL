@@ -16,7 +16,7 @@ ORDER BY fech_al ASC;
 
 /* 6.- Mostrar nombre de alumnos que contengan alguna ‘A’ en el nombre. */
 SELECT nom_al AS nombre FROM alumnos
-WHERE nom_al LIKE 'A%';
+WHERE nom_al LIKE '%A%';
 
 /* 7.- Mostrar id_al ordenado por nota. */
 SELECT id_al AS ID from relacion
@@ -32,7 +32,7 @@ JOIN profesores p ON p.id_prof = r.id_prof;
 SELECT a.nom_al AS nombre_alumno
 FROM alumnos a
 JOIN relacion r ON a.id_al = r.id_al
-JOIN profesores p ON p.id_prof = "P01";
+WHERE r.id_prof LIKE 'P01';
 
 /* 10.- Mostrar el nombre y la nota de los alumnos que les de clase el profesor ‘FERNAND0 GARCIA’. */
 SELECT a.nom_al AS nombre_alumno, r.nota
@@ -41,25 +41,25 @@ JOIN relacion r ON a.id_al = r.id_al
 JOIN profesores p ON p.nom_prof = "FERNANDO GARCIA";
 
 /* 11.- Mostrar todos los alumnos (codigo) que hayan aprobado con el profesor P01. */
-SELECT a.id_al AS id_alumno
-FROM alumnos a
-JOIN relacion r ON a.id_al = r.id_al
-JOIN profesores p ON p.id_prof = "P01"
-WHERE r.nota >= 5;
+SELECT id_al
+FROM relacion
+WHERE nota >= 5
+AND id_prof LIKE 'P01';
 
 /* 12.- Mostrar todos los alumnos (nombre) que hayan aprobado con el profesor P01. */
 SELECT a.nom_al AS nombre_alumno
 FROM alumnos a
 JOIN relacion r ON a.id_al = r.id_al
-JOIN profesores p ON p.id_prof = "P01"
-WHERE r.nota >= 5;
+WHERE r.nota >= 5
+AND r.id_prof LIKE 'P01';
 
 /* 13.- Mostrar todos los alumnos (nombre) que hayan aprobado con el profesor ‘CARMEN TORRES’. */
 SELECT a.nom_al AS nombre_alumno
 FROM alumnos a
 JOIN relacion r ON a.id_al = r.id_al
-JOIN profesores p ON p.nom_prof = "CARMEN TORRES"
-WHERE r.nota >= 5;
+JOIN profesores p ON p.id_prof LIKE r.id_prof
+WHERE r.nota >= 5
+AND nom_prof LIKE 'Carmen Torres';
 
 /* 14.- Mostrar el alumno/s que haya obtenido la nota más alta con ‘P01’ */
 SELECT a.nom_al AS nombre_alumno, r.nota, r.id_prof
