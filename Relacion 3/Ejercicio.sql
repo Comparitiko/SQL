@@ -237,24 +237,45 @@ FROM carteros car
 JOIN relacion2 r ON r.id_cart LIKE car.id_cart
 JOIN periodos p ON p.id_per = r.id_per
 GROUP BY car.nom_cart, car.sueldo
-ORDER BY COUNT(p.id_per) DESC
-LIMIT 1;
+HAVING COUNT(p.id_per) = (
+	SELECT COUNT(p2.id_per)
+    FROM periodos p2
+    JOIN relacion2 r2 ON r2.id_per = p2.id_per
+    JOIN carteros c2 ON c2.id_cart = r2.id_cart
+    GROUP BY c2.id_cart
+    ORDER BY COUNT(p.id_per) DESC
+	LIMIT 1
+);
 /* 17.- NOMBRE DE LA CIUDAD QUE MAS CARTEROS HA TENIDO. */
 SELECT c.nom_ciud
 FROM ciudades c
 JOIN relacion2 r ON c.id_ciud LIKE r.id_ciud
 JOIN carteros car ON car.id_cart LIKE r.id_cart
 GROUP BY c.nom_ciud
-ORDER BY COUNT(car.id_cart) DESC
-LIMIT 1;
+HAVING  COUNT(car.id_cart) = (
+	SELECT COUNT(car2.id_cart)
+    FROM carteros car2
+    JOIN relacion2 r2 ON r2.id_cart = car2.id_cart
+    JOIN ciudades c2 ON c2.id_ciud = r2.id_ciud
+    GROUP BY c2.id_ciud
+    ORDER BY COUNT(car.id_cart) DESC
+	LIMIT 1
+);
 /* 18.- NOMBRE DE LA ZONA QUE MAS CARTEROS HA TENIDO (Y Nº DE CARTEROS) */
 SELECT z.nom_zona AS nombre_zona, COUNT(car.id_cart) AS numero_carteros
 FROM zonas z
 JOIN relacion2 r ON r.id_zona LIKE z.id_zona
 JOIN carteros car ON car.id_cart LIKE r.id_cart
 GROUP BY z.nom_zona
-ORDER BY COUNT(car.id_cart) DESC
-LIMIT 1;
+HAVING COUNT(car.id_cart) = (
+	SELECT COUNT(car2.id_cart)
+    FROM carteros car2
+    JOIN relacion2 r2 ON r2.id_cart = car2.id_cart
+    JOIN zonas z2 ON z2.id_zona = r2.id_zona
+    GROUP BY z2.nom_zona
+    ORDER BY COUNT(car2.id_cart) DESC
+	LIMIT 1
+);
 /* 19.- NOMBRE/S Y SUELDO/S DEL CARTERO QUE HA REPARTIDO EN EL ESTE DE LA CIUDAD3. */
 SELECT car.nom_cart, car.sueldo
 FROM carteros car
@@ -284,5 +305,12 @@ FROM periodos pe
 JOIN relacion2 r ON r.id_per LIKE pe.id_per
 JOIN carteros car ON car.id_cart LIKE r.id_cart
 GROUP BY pe.fecha_ini, pe.fecha_fin
-ORDER BY COUNT(car.id_cart) DESC
-LIMIT 1;
+HAVING COUNT(car.id_cart) = (
+	SELECT COUNT(car2.id_cart)
+    FROM carteros car2
+    JOIN relacion2 r2 ON car2.id_cart LIKE r2.id_cart
+	JOIN periodos pe2 ON pe2.id_per LIKE r2.id_per
+	GROUP BY pe2.fecha_ini, pe2.fecha_fin
+    ORDER BY COUNT(car2.id_cart) DESC
+    LIMIT 1
+);

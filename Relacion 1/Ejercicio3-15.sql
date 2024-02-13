@@ -78,3 +78,40 @@ WHERE NOT EXISTS (
 	SELECT 1 FROM relacion r2
     WHERE r2.id_al = a.id_al AND r2.nota < 5
 );
+
+/* Media de nota de los alumnos con cada profesor*/
+SELECT ROUND(AVG(r.nota), 1) AS media_notas, p.nom_prof
+FROM relacion r
+JOIN profesores p ON p.id_prof LIKE r.id_prof
+GROUP BY p.nom_prof;
+
+/* Media de nota de los alumnos */
+SELECT AVG(nota) AS media_notas, id_al
+FROM relacion
+GROUP BY id_al;
+
+SELECT AVG(nota) AS media_notas, id_al
+FROM relacion
+GROUP BY id_al
+HAVING AVG(nota) >= 7;
+
+/* Mostrar nombre profesor o profesores ue tengan la mayor cantidad de alumnos*/
+SELECT p.nom_prof, COUNT(r.id_al)
+FROM profesores p
+JOIN relacion r ON r.id_prof LIKE p.id_prof
+GROUP BY p.nom_prof
+HAVING COUNT(r.id_al) > 3
+AND COUNT(id_al) = (
+		SELECT COUNT(id_al)
+        FROM relacion
+        GROUP BY id_prof
+		ORDER BY COUNT(id_al) DESC
+		LIMIT 1
+);
+
+/* Mostrar nombre profesores que tengan mas de 3 alumnos */
+SELECT p.nom_prof, COUNT(r.id_al)
+FROM profesores p
+JOIN relacion r ON r.id_prof LIKE p.id_prof
+GROUP BY p.nom_prof
+HAVING COUNT(r.id_al) > 3;
