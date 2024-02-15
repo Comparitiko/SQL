@@ -3,6 +3,8 @@ CREATE DATABASE IF NOT EXISTS ejemplo;
 
 USE ejemplo;
 
+DROP TABLE IF EXISTS holamundo
+
 /* Crear tabla con el engine INNODB */
 CREATE TABLE IF NOT EXISTS holamundo (
 	id INTEGER PRIMARY KEY AUTO_INCREMENT,
