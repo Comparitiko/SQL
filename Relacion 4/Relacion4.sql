@@ -124,12 +124,6 @@ INSERT INTO relacion VALUES
 ('ME2', '0123-BVC', 'PE6', 'PI3', 89);
 
 /* 
-6.- PRECIO TOTAL DE TODAS LAS REPARACIONES.
-7.- NOMBRE DE PIEZA Y TIPO DE LA PIEZA MAS USADA.
-8.- NOMBRE Y TIPO DE LA PIEZA MENOS USADA.
-9.- MATRICULA, MARCA, MODELO COLOR PIEZA Y TIPO DE TODOS LOS COCHES
-REPARADOS.
-10.- MODELO DE PIEZA Y TIPO PUESTAS A ‘0123-BVC’
 11.-DINERO QUE HA GASTADO EN REPARACIONES 1234-CDF
 12.- DATOS DEL COCHE QUE MAS HA GASTADO EN REPARACIONES
 13- DATOS DEL COCHE QUE MENOS HA GASTADO EN REPARACIONES.
@@ -181,5 +175,54 @@ FROM coches
 WHERE tipo LIKE 'Diesel';
 
 /* 5.- DATOS DEL COCHE QUE MAS HA IDO AL TALLER. */
-SELECT *
-FROM coches
+SELECT c.*
+FROM coches c
+JOIN relacion r ON r. mat_co LIKE c.mat_co
+GROUP BY c.mat_co
+HAVING COUNT(c.mat_co) = (
+	SELECT COUNT(r2.mat_co)
+    FROM coches c2
+	JOIN relacion r2 ON r2.mat_co LIKE c2.mat_co
+    GROUP BY c2.mat_co
+    ORDER BY COUNT(r2.mat_co) DESC
+    LIMIT 1
+);
+
+/* 6.- PRECIO TOTAL DE TODAS LAS REPARACIONES. */
+SELECT SUM(precio) AS 'Precio total'
+FROM relacion;
+
+/* 7.- NOMBRE DE PIEZA Y TIPO DE LA PIEZA MAS USADA. */
+SELECT p.nom_piez AS 'Nombre pieza', t.nom_tipo AS 'Nombre tipo'
+FROM piezas p
+JOIN tipos t ON t.id_tipo = p.id_tipo
+JOIN (
+	SELECT id_piez, COUNT(*) AS total_piezas
+    FROM relacion
+    GROUP BY id_piez
+    ORDER BY COUNT(*) DESC
+    LIMIT 1
+    
+) AS max_piezas ON p.id_piez = max_piezas.id_piez;
+
+/* 8.- NOMBRE Y TIPO DE LA PIEZA MENOS USADA. */
+SELECT p.nom_piez AS 'Nombre pieza', t.nom_tipo AS 'Nombre tipo'
+FROM piezas p
+JOIN tipos t ON t.id_tipo = p.id_tipo
+JOIN relacion r ON r.id_piez = p.id_piez
+GROUP BY r.id_piez
+HAVING COUNT(r.id_piez) = (
+	SELECT COUNT(*) AS total_piezas
+    FROM relacion
+    GROUP BY id_piez
+    ORDER BY COUNT(*)
+    LIMIT 1
+);
+
+/* 9.- MATRICULA, MARCA, MODELO COLOR PIEZA Y TIPO DE TODOS LOS COCHES REPARADOS. */
+SELECT DISTINCT c.mat_co AS matricula, c.mod_co AS marca, c.color, p.nom_piez AS pieza, c.tipo
+FROM coches c
+JOIN relacion r ON r.mat_co = c.mat_co
+JOIN piezas p ON p.id_piez = r.id_piez
+
+/* 10.- MODELO DE PIEZA Y TIPO PUESTAS A ‘0123-BVC’ */
