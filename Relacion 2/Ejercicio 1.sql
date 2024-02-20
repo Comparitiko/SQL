@@ -55,7 +55,7 @@ INSERT INTO articulos (clave_articulo, nombre, precio, clave_fabricante) VALUES
 /* a) Obtener todos los datos de los productos de la tienda */
 SELECT * FROM articulos;
 /* b) Obtener los nombres de los productos de la tienda */
-SELECT nombre FROM articulos;
+SELECT DISTINCT nombre FROM articulos;
 /* c) Obtener los nombres y precio de los productos de la tienda */
 SELECT nombre, precio FROM articulos;
 /* d) Obtener los nombres de los artículos sin repeticiones */

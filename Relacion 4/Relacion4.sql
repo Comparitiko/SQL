@@ -220,7 +220,7 @@ FROM relacion
 WHERE mat_co = '1234-CDF';
 
 /* 12.- DATOS DEL COCHE QUE MAS HA GASTADO EN REPARACIONES */
-SELECT c.*
+SELECT c.*, SUM(r.precio)
 FROM coches c
 JOIN relacion r ON r.mat_co = c.mat_co
 GROUP BY c.mat_co

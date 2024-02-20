@@ -45,13 +45,17 @@ CREATE TABLE IF NOT EXISTS relacion2 (
     id_per CHAR(3),
     PRIMARY KEY (id_zona, id_ciud, id_cart, id_per),
     FOREIGN KEY (id_zona) REFERENCES zonas(id_zona)
-    ON DELETE CASCADE,
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
     FOREIGN KEY (id_ciud) REFERENCES ciudades(id_ciud)
-    ON DELETE CASCADE,
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
     FOREIGN KEY (id_cart) REFERENCES carteros(id_cart)
-    ON DELETE CASCADE,
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
     FOREIGN KEY (id_per) REFERENCES periodos(id_per)
     ON DELETE CASCADE
+    ON UPDATE CASCADE
 );
 
 INSERT INTO provincias VALUES
@@ -144,6 +148,7 @@ WHERE num_hab = (
 	SELECT max(num_hab)
     FROM ciudades
 );
+
 /* 2.- NOMBRE DEL CARTERO CON MAYOR SUELDO */
 SELECT nom_cart
 FROM carteros
@@ -182,11 +187,11 @@ FROM carteros car
 JOIN relacion2 r ON car.id_cart = r.id_cart
 WHERE r.id_zona = 'Z01' AND r.id_ciud = 'C02';
 /* 9.- NOMBRE DE LOS CARTEROS QUE HAN TRABAJADO EN LA ZONA CENTRO DE LA CIUDAD1 */
-SELECT car.nom_cart AS nombre_cartero
+SELECT DISTINCT car.nom_cart AS nombre_cartero
 FROM carteros car
 JOIN relacion2 r ON car.id_cart = r.id_cart
 JOIN zonas z ON r.id_zona = z.id_zona
-JOIN ciudades c ON z.id_ciud = c.id_ciud
+JOIN ciudades c ON r.id_ciud = c.id_ciud
 WHERE z.nom_zona = 'Centro'
 AND c.nom_ciud = 'Ciudad1';
 /* 10.- NOMBRE DE LOS CARTEROS (Y FECHAS DE INICIO Y FIN) QUE HAN TRABAJADO EN LA RIVERA DE LA CIUDAD 4. */
