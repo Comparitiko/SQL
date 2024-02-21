@@ -333,7 +333,8 @@ SELECT nombre
 FROM departamentos;
 
 /* 30. Añadir todos los empleados del departamento 02 al proyecto MES */
-INSERT INTO trabaja (cdemp, cdpro, nhoras) VALUES
+INSERT INTO trabaja (cdemp, cdpro, nhoras) VALUES (
 SELECT (cdemp, 'MES', 0)
 FROM empleados e
-WHERE 
+WHERE cddep LIKE '02'
+)
