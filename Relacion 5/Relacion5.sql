@@ -244,20 +244,62 @@ HAVING SUM(t.nhoras) / COUNT(DISTINCT e.nombre) = (
 /* 19. Lista donde aparezcan los nombres de empleados, nombres de sus departamentos y nombres de
 proyectos en los que trabajan. Los empleados sin departamento, o que no trabajen en proyectos
 aparecerán en la lista y en lugar del departamento o el proyecto aparecerá “*****”. */ 
+SELECT DISTINCT e.nombre AS empleado, COALESCE(d.nombre, '*****') AS departamento, COALESCE(p.nombre, '*****') AS proyecto
+FROM empleados e
+LEFT JOIN departamentos d ON d.cddep = e.cddep
+LEFT JOIN trabaja t ON t.cdemp = e.cdemp
+LEFT JOIN proyectos p ON p.cdpro = t.cdpro;
 
-/*
-20. Lista de los empleados indicando el número de días que llevan trabajando en la empresa.
-21. Número de proyectos en los que trabajan empleados de la ciudad de Córdoba.
-22. Lista de los empleados que son jefes de más de un empleado, junto con el número de empleados
-que están a su cargo.
-23. Listado que indique años y número de empleados contratados cada año, todo ordenado por orden
-ascendente de año.
-24. Listar los nombres de proyectos en los que aparezca la palabra “energía”, indicando también el
-nombre del departamento que lo gestiona.
-25. Lista de departamentos que están en la misma ciudad que el departamento “Gerencia”.
-26. Lista de departamentos donde exista algún trabajador con apellido “Amarillo”.
-27. Lista de los nombres de proyecto y departamento que los gestiona, de los proyectos que tienen 0
-horas de trabajo realizadas.
-28. Asignar el empleado “Manuel Amarillo” al departamento “05”
-29. Borrar los departamentos que no tienen empleados.
-30. Añadir todos los empleados del departamento 02 al proyecto MES. */
+/* 20. Lista de los empleados indicando el número de días que llevan trabajando en la empresa */
+SELECT nombre, DATEDIFF(NOW(), fecha_ingreso) AS dias_trabajando
+FROM empleados;
+
+/* 21. Número de proyectos en los que trabajan empleados de la ciudad de Córdoba. */
+SELECT COUNT(*) AS num_proyectos
+FROM proyectos p
+JOIN trabaja t ON t.cdpro = p.cdpro
+JOIN empleados e ON e.cdemp = t.cdemp
+JOIN departamentos d ON d.cddep = e.cddep
+WHERE d.ciudad LIKE 'Cordoba';
+
+/* 22. Lista de los empleados que son jefes de más de un empleado, junto con el número de empleados
+que están a su cargo. */ 
+SELECT e.nombre, COUNT(e2.cdemp)
+FROM empleados e
+JOIN empleados e2 ON e2.cdjefe = e.cdemp
+GROUP BY e.cdemp
+HAVING COUNT(e.cdemp) > 1;
+
+/* 23. Listado que indique años y número de empleados contratados cada año, todo ordenado por orden
+ascendente de año. */
+SELECT DISTINCT YEAR(fecha_ingreso), COUNT(cdemp) AS cantidad_empleados
+FROM empleados
+GROUP BY fecha_ingreso
+ORDER BY 1;
+
+/* 24. Listar los nombres de proyectos en los que aparezca la palabra “energía”, indicando también el
+nombre del departamento que lo gestiona */
+SELECT p.nombre AS proyecto, d.nombre AS departamento
+FROM proyectos p
+JOIN departamentos d ON d.cddep = p.cddep
+WHERE p.nombre LIKE '%energia%';
+
+/* 25. Lista de departamentos que están en la misma ciudad que el departamento “Gerencia” */
+SELECT nombre AS departamento
+FROM departamentos
+WHERE ciudad LIKE (
+	SELECT ciudad
+    FROM departamentos
+    WHERE nombre LIKE 'Gerencia'
+);
+
+/* 26. Lista de departamentos donde exista algún trabajador con apellido “Amarillo”. */
+
+/* 27. Lista de los nombres de proyecto y departamento que los gestiona, de los proyectos que tienen 0
+horas de trabajo realizadas */
+
+/* 28. Asignar el empleado “Manuel Amarillo” al departamento “05” */ 
+
+/* 29. Borrar los departamentos que no tienen empleados */
+
+/* 30. Añadir todos los empleados del departamento 02 al proyecto MES */
