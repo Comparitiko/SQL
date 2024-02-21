@@ -294,11 +294,29 @@ WHERE ciudad LIKE (
 );
 
 /* 26. Lista de departamentos donde exista algún trabajador con apellido “Amarillo”. */
+SELECT DISTINCT d.nombre
+FROM departamentos d
+JOIN empleados e ON e.cddep = d.cddep
+WHERE e.nombre LIKE '% Amarillo';
 
 /* 27. Lista de los nombres de proyecto y departamento que los gestiona, de los proyectos que tienen 0
 horas de trabajo realizadas */
+SELECT p.nombre AS proyecto, d.nombre AS departamento
+FROM proyectos p
+JOIN departamentos d ON d.cddep = p.cddep
+JOIN trabaja t ON t.cdpro = p.cdpro
+GROUP BY t.cdpro
+HAVING SUM(t.nhoras) = 0;
 
 /* 28. Asignar el empleado “Manuel Amarillo” al departamento “05” */ 
+SET SQL_SAFE_UPDATES = 0;
+UPDATE empleados
+SET cddep = '05'
+WHERE nombre LIKE 'Manuel Amarillo';
+
+SELECT nombre, cddep
+FROM empleados
+WHERE nombre LIKE 'Manuel Amarillo';
 
 /* 29. Borrar los departamentos que no tienen empleados */
 
