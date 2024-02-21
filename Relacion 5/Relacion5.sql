@@ -319,5 +319,21 @@ FROM empleados
 WHERE nombre LIKE 'Manuel Amarillo';
 
 /* 29. Borrar los departamentos que no tienen empleados */
+SELECT nombre
+FROM departamentos;
+
+DELETE FROM departamentos
+WHERE NOT EXISTS (
+	SELECT 1
+    FROM empleados
+    WHERE empleados.cddep = departamentos.cddep
+);
+
+SELECT nombre
+FROM departamentos;
 
 /* 30. Añadir todos los empleados del departamento 02 al proyecto MES */
+INSERT INTO trabaja (cdemp, cdpro, nhoras) VALUES
+SELECT (cdemp, 'MES', 0)
+FROM empleados e
+WHERE 
