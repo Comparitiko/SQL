@@ -195,6 +195,7 @@ JOIN ciudades c ON r.id_ciud = c.id_ciud
 WHERE z.nom_zona = 'Centro'
 AND c.nom_ciud = 'Ciudad1';
 /* 10.- NOMBRE DE LOS CARTEROS (Y FECHAS DE INICIO Y FIN) QUE HAN TRABAJADO EN LA RIVERA DE LA CIUDAD 4. */
+/* ESTA MAL */
 SELECT car.nom_cart AS nombre_cartero, p.fecha_ini AS inicio, p.fecha_fin AS fin
 FROM carteros car
 JOIN relacion2 r ON car.id_cart = r.id_cart
@@ -213,20 +214,20 @@ WHERE p.nom_prov = 'Sevilla';
 /* 12.- NOMBRE DE LOS CARTEROS QUE HAN TRABAJADO EN EL PERIODO PE4 Y NOMBRE DE LA CIUDAD EN QUE ESTABAN TRABAJANDO. */
 SELECT DISTINCT car.nom_cart, c.nom_ciud
 FROM carteros car
-JOIN relacion2 r ON car.id_cart = car.id_cart
+JOIN relacion2 r ON r.id_cart = car.id_cart
 JOIN ciudades c ON r.id_ciud = c.id_ciud
 WHERE r.id_per = 'PE4';
 /* 13.- CARTEROS QUE HAN TRABAJADO EN LA CIUDAD CIUDAD1 Y FECHA DE INICIO Y FIN EN QUE LO HAN HECHO. */
 SELECT DISTINCT car.nom_cart AS nombre_cartero, p.fecha_ini AS inicio, p.fecha_fin AS fin
 FROM carteros car
-JOIN relacion2 r ON car.id_cart = car.id_cart
+JOIN relacion2 r ON r.id_cart = car.id_cart
 JOIN periodos p ON p.id_per = r.id_per
 JOIN ciudades c ON r.id_ciud = c.id_ciud
 WHERE c.nom_ciud = 'Ciudad1';
 /* 14.- CARTEROS QUE HAN TRABAJADO EN LA PROVINCIA DE ALMERIA NOMBRE DE ZONA Y CIUDAD Y FECHAS EN QUE LO HAN HECHO. */
 SELECT DISTINCT car.nom_cart AS nombre_cartero, p.fecha_ini AS inicio, p.fecha_fin AS fin
 FROM carteros car
-JOIN relacion2 r ON car.id_cart = car.id_cart
+JOIN relacion2 r ON r.id_cart = car.id_cart
 JOIN periodos p ON p.id_per = r.id_per
 JOIN ciudades c ON r.id_ciud = c.id_ciud
 JOIN provincias pr ON c.id_prov = pr.id_prov
