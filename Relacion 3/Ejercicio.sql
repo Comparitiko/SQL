@@ -44,10 +44,7 @@ CREATE TABLE IF NOT EXISTS relacion2 (
     id_cart CHAR(3),
     id_per CHAR(3),
     PRIMARY KEY (id_zona, id_ciud, id_cart, id_per),
-    FOREIGN KEY (id_zona) REFERENCES zonas(id_zona)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE,
-    FOREIGN KEY (id_ciud) REFERENCES ciudades(id_ciud)
+    FOREIGN KEY (id_zona, id_ciud) REFERENCES zonas(id_zona, id_ciud)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
     FOREIGN KEY (id_cart) REFERENCES carteros(id_cart)
@@ -195,12 +192,11 @@ JOIN ciudades c ON r.id_ciud = c.id_ciud
 WHERE z.nom_zona = 'Centro'
 AND c.nom_ciud = 'Ciudad1';
 /* 10.- NOMBRE DE LOS CARTEROS (Y FECHAS DE INICIO Y FIN) QUE HAN TRABAJADO EN LA RIVERA DE LA CIUDAD 4. */
-/* ESTA MAL */
 SELECT car.nom_cart AS nombre_cartero, p.fecha_ini AS inicio, p.fecha_fin AS fin
 FROM carteros car
 JOIN relacion2 r ON car.id_cart = r.id_cart
 JOIN zonas z ON r.id_zona = z.id_zona
-JOIN ciudades c ON z.id_ciud = c.id_ciud
+JOIN ciudades c ON r.id_ciud = c.id_ciud
 JOIN periodos p ON r.id_per = p.id_per
 WHERE z.nom_zona = 'Rivera'
 AND c.nom_ciud = 'Ciudad4';
