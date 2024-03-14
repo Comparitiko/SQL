@@ -134,9 +134,11 @@ INSERT INTO empleado VALUES
 número de habitaciones. */
 SELECT nom_aloj
 FROM alojamientos
-WHERE habitaciones = (
+WHERE categoria = '****' 
+AND habitaciones = (
 	SELECT MIN(habitaciones)
     FROM alojamientos
+    WHERE categoria = '****'
 );
 
 /* 2. Datos de los empleados cuyo sueldo está comprendido entre 1000 y 1500 euros
@@ -297,4 +299,4 @@ WHERE id_aloj = (
 SELECT * 
 FROM empleado e
 INNER JOIN alojamientos a ON a.id_aloj = e.id_aloj
-WHERE a.nom_aloj = 'Terraza Carmona'
+WHERE a.nom_aloj = 'Terraza Carmona';
