@@ -259,7 +259,7 @@ GROUP BY a.id_aloj;
 /* 14. El sueldo de los empleados que trabajan en la provincia de Almería se
 incrementa en un 10% (es decir se actualiza la tabla empleados). */
 UPDATE empleado
-SET sueldo = sueldo * 1.10
+SET sueldo = sueldo * 1.1+0
 WHERE id_aloj IN (
 	SELECT DISTINCT a.id_aloj
     FROM alojamientos a
@@ -280,7 +280,7 @@ WHERE p.provincia = 'Almeria';
 SET SQL_SAFE_UPDATES = 0; /*EJECUTAR ESTO PARA QUE FUNCIONE LA ACTUALIZACION DE ABAJO*/
 
 UPDATE alojamientos
-SET habitaciones = 75
+SET habitaciones = habitaciones + 75
 WHERE nom_aloj = 'Terraza Carmona';
 
 /* Comprobacion */

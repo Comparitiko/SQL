@@ -153,7 +153,7 @@ WHERE cddep = (
 );
 
 /* 10. Media del año de ingreso en la empresa de los empleados que trabjan en algún proyecto. */
-SELECT ROUND(AVG(YEAR(e.fecha_ingreso)))
+SELECT DISTINCT ROUND(AVG(YEAR(e.fecha_ingreso)))
 FROM empleados e
 JOIN trabaja t ON t.cdemp = e.cdemp;
 
@@ -162,8 +162,8 @@ Esperanza Amarillo. */
 SELECT e.nombre
 FROM empleados e
 JOIN empleados e2 ON e2.cdemp = e.cdjefe
-WHERE e.nombre LIKE '% Verde' OR e.nombre LIKE '% Rojo'
-AND e2.nombre LIKE 'Esperanza Amarillo';
+WHERE e2.nombre LIKE 'Esperanza Amarillo'
+AND (e.nombre  LIKE '% Verde' OR e.nombre LIKE '% Rojo');
 
 /* 12. Suponiendo que la letra que forma parte del código de empleado es la categoría laboral, listar los
 empleados de categoría B que trabajan en algún proyecto. */
@@ -226,13 +226,13 @@ WHERE NOT EXISTS (
 decide que una medida de la productividad puede ser el número de horas trabajadas por
 empleados del departamento en proyectos, dividida por los empleados de ese departamento.
 ¿Qué departamento es el más productivo? */
-SELECT d.nombre
+SELECT d.nombre, SUM(nhoras)
 FROM departamentos d
 JOIN empleados e ON e.cddep = d.cddep
 JOIN trabaja t ON t.cdemp = e.cdemp
 GROUP BY d.cddep
-HAVING SUM(t.nhoras) / COUNT(DISTINCT e.nombre) = (
-	SELECT SUM(t2.nhoras) / COUNT(DISTINCT e2.nombre)
+HAVING SUM(t.nhoras) / COUNT(e.nombre) = (
+	SELECT SUM(t2.nhoras) / COUNT(e2.nombre)
     FROM trabaja t2
     JOIN empleados e2 ON e2.cdemp = t2.cdemp
     JOIN departamentos d2 ON d2.cddep = e2.cddep
