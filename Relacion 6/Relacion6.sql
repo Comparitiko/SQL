@@ -122,3 +122,182 @@ INSERT INTO vendart VALUES
 ('VN3', 'AR9', '2005-08-24'),
 ('VN7', 'AR9', '2005-08-25');
 
+/* 1.- CIUDAD DONDE MAS SE VENDIO */
+SELECT c.nom_ciudad
+FROM ciudades c
+JOIN tiendas t ON t.id_ciudad = c.id_ciudad
+JOIN vendedores v ON v.id_tienda = t.id_tienda
+JOIN vendart va ON va.id_vend = v.id_vend
+JOIN articulos a ON a.id_art = va.id_art
+GROUP BY c.id_ciudad
+HAVING SUM(a.precio) = (
+	SELECT SUM(a2.precio)
+    FROM articulos a2
+    JOIN vendart va2 ON va2.id_art = a2.id_art
+    JOIN vendedores v2 ON v2.id_vend = va2.id_vend
+    JOIN tiendas t2 ON t2.id_tienda = v2.id_tienda
+	GROUP BY t2.id_ciudad
+    ORDER BY 1 DESC
+    LIMIT 1
+);
+
+/* 2.- TIENDA DONDE MAS SE VENDIO */
+SELECT t.nom_tienda
+FROM tiendas t
+JOIN vendedores v ON v.id_tienda = t.id_tienda
+JOIN vendart va ON va.id_vend = v.id_vend
+JOIN articulos a ON a.id_art = va.id_art
+GROUP BY t.id_tienda
+HAVING SUM(a.precio) = (
+	SELECT SUM(a2.precio)
+    FROM articulos a2
+    JOIN vendart va2 ON va2.id_art = a2.id_art
+    JOIN vendedores v2 ON v2.id_vend = va2.id_vend
+    GROUP BY v2.id_tienda
+    ORDER BY 1 DESC
+    LIMIT 1
+);
+
+/* 3.- VENDEDOR QUE MAS VENDIO */
+SELECT v.nom_vend
+FROM vendedores v
+JOIN vendart va ON va.id_vend = v.id_vend
+JOIN articulos a ON a.id_art = va.id_art
+GROUP BY v.id_vend
+HAVING SUM(a.precio) = (
+	SELECT SUM(a2.precio)
+    FROM articulos a2
+    JOIN vendart va2 ON va2.id_art = a2.id_art
+    GROUP BY va2.id_vend
+    ORDER BY 1 DESC
+    LIMIT 1
+);
+
+/* 4.-NOMBRE DE CIUDAD, VENDEDOR, ARTICULO, TIENDA TIPO Y PRECIO DE TODO LO VENDIDO */
+SELECT DISTINCT c.nom_ciudad, v.nom_vend, a.nom_art, t.nom_tienda, ti.nom_tipo, a.precio
+FROM ciudades c
+JOIN tiendas t ON t.id_ciudad = c.id_ciudad
+JOIN vendedores v ON v.id_tienda = t.id_tienda
+JOIN vendart va ON va.id_vend = v.id_vend
+JOIN articulos a ON a.id_art = va.id_art
+JOIN tiposart ti ON ti.id_tipo = a.id_tipo;
+
+/* 5.- NOMBRE DEL TIPO DE ARTICULO MAS CARO */
+SELECT ti.nom_tipo
+FROM tiposart ti
+JOIN articulos a ON a.id_tipo = ti.id_tipo
+WHERE a.precio = (
+	SELECT MAX(precio)
+    FROM articulos
+);
+
+/* 6.- DATOS DEL VENDEDOR QUE MAS GANA */
+SELECT *
+FROM vendedores
+WHERE salario = (
+	SELECT MAX(salario)
+	FROM vendedores
+);
+
+/* 7.- MONTANTE DE TODOS LOS ARTICULOS DE TIPO BAZAR */
+SELECT SUM(a.precio)
+FROM articulos a
+JOIN tiposart ti ON ti.id_tipo = a.id_tipo
+WHERE ti.nom_tipo = 'Bazar';
+
+/* 8.- MONTANTE DE TODO LO QUE SE VENDIO EN ALMERIA */
+SELECT SUM(a.precio)
+FROM articulos a
+JOIN vendart va ON va.id_art = a.id_art
+JOIN vendedores v ON v.id_vend = va.id_vend
+JOIN tiendas t ON t.id_tienda = v.id_tienda
+JOIN ciudades c ON c.id_ciudad = t.id_ciudad
+GROUP BY c.nom_ciudad
+HAVING c.nom_ciudad = 'Almeria';
+
+/* 9.- MONTANTE DE TODO LO QUE SE VENDIO EN LUNA */
+SELECT SUM(a.precio)
+FROM articulos a
+JOIN vendart va ON va.id_art = a.id_art
+JOIN vendedores v ON v.id_vend = va.id_vend
+JOIN tiendas t ON t.id_tienda = v.id_tienda
+GROUP BY t.nom_tienda
+HAVING t.nom_tienda = 'Luna';
+
+/* 10.- NOMBRE DE ARTICULO, TIPO, PRECIO, TIENDA, CIUDAD Y FECHA DE LO QUE VENDIO MANUEL */
+SELECT a.nom_art, ti.nom_tipo, a.precio, t.nom_tienda, c.nom_ciudad, va.fech_venta
+FROM ciudades c
+JOIN tiendas t ON t.id_ciudad = c.id_ciudad
+JOIN vendedores v ON v.id_tienda = t.id_tienda
+JOIN vendart va ON va.id_vend = v.id_vend
+JOIN articulos a ON a.id_art = va.id_art
+JOIN tiposart ti ON ti.id_tipo = a.id_tipo
+WHERE v.nom_vend = 'Manuel';
+
+/* 11.- TOTAL DEL SALARIO DE TODOS LOS TRABAJADORES DE ALMERIA */
+SELECT SUM(v.salario)
+FROM vendedores v
+JOIN tiendas t ON t.id_tienda = v.id_tienda
+JOIN ciudades c ON c.id_ciudad = t.id_ciudad
+GROUP BY c.nom_ciudad
+HAVING c.nom_ciudad = 'Almeria';
+
+/* 12.- NOMBRE DE LOS QUE VENDIERON LECHE */
+SELECT DISTINCT v.nom_vend
+FROM vendedores v
+JOIN vendart va ON va.id_vend = v.id_vend
+JOIN articulos a ON a.id_art = va.id_art
+WHERE a.nom_art = 'Leche';
+
+/* 13.- NOMBRE DE LOS QUE VENDIERON ARTICULOS DE TIPO BAZAR. */
+SELECT DISTINCT v.nom_vend
+FROM vendedores v
+JOIN vendart va ON va.id_vend = v.id_vend
+JOIN articulos a ON a.id_art = va.id_art
+JOIN tiposart ti ON ti.id_tipo = a.id_tipo
+WHERE ti.nom_tipo = 'Bazar';
+
+/* 14.- ARTICULOS DE TIPO BAZAR MAS VENDIDOS */
+SELECT a.nom_art, COUNT(va.id_art)
+FROM articulos a
+JOIN vendart va ON va.id_art = a.id_art
+JOIN tiposart ti ON ti.id_tipo = a.id_tipo
+GROUP BY ti.nom_tipo, a.nom_art
+HAVING ti.nom_tipo = 'Bazar'
+AND COUNT(va.id_art) = (
+	SELECT COUNT(va2.id_art)
+    FROM vendart va2
+    JOIN articulos a2 ON a2.id_art = va2.id_art
+    JOIN tiposart ti2 On ti2.id_tipo = a2.id_tipo
+    GROUP BY ti2.nom_tipo, a2.nom_art
+	HAVING ti2.nom_tipo = 'Bazar'
+    ORDER BY 1 DESC
+    LIMIT 1
+);
+
+/* 15.- NOMBRE DEL TIPO CON QUE MAS SE GANA */
+
+
+/*
+16.- SALARIO Y NOMBRE DE TODOS LOS QUE VENDIERON BOMBILLAS.
+17.- TIENDAS Y CIUDAD DONDE SE VENDIO ALGUNA RADIO.
+18.- SUBIR EL SUELDO UN 2% A LOS EMPLEADOS DE SEVILLA
+19.- BAJA EL SUELDO UN 1% A LOS QUE NO HAYAN VENDIDO LECHE
+20.- SUBIR EL PRECIO UN 3% AL ARTICULO MAS VENDIDO
+21.- SUBIR EL SUELDO UN 2% A LOS ARTICULOS DE TIPO MAS VENDIDO
+22.- BAJAR UN 3% TODOS LOS ARTICULOS DE PAPELERIA
+23.- SUBIR EL PRECIO UN 1% A TODOS LOS ARTICULOS VENDIDOS EN ALMERIA
+24.- BAJAR EL PRECIO UN 5% AL ARTICULO QUE MAS HACE QUE NO SE VENDE
+25.- CERRAR LA TIENDA QUE MENOS HA VENDIDO
+26.- LA TIENDA LUNA PASA A LLAMARSE SOL Y LUNA
+27.- DESPEDIR AL TRABAJADOR QUE MAS VENDIO
+28.- LAS TIENDAS QUE NO VENDIERON LAPICES PASAN TODAS A SEVILLA
+29.- DESPEDIR AL QUE MENOS DINERO HA HECHO VENDIENDO.
+30.- EL ARTICULO QUE MENOS SE HA VENDIDO DEJAR DE ESTAR EN STOCK
+31.- EL ARTICULO QUE MENOS DINERO HA GENERADO DEJA DE ESTAR EN STOCK
+32.- EL TIPO DE ARTICULO MENOS VENDIDO DEJA DE ESTAR EN STOCK
+33.- EL TIPO DE ARTICULO CON EL QUE MENOS SE HA GANADO DEJA DE ESTAR EN STOCK
+34.- SE DESPIDEN A TODOS LOS TRABAJADORES QUE NO HAN VENDIDO ARTICULOS DE BAZAR
+35.- SE CIERRA LA TIENDA QUE MENOS DINERO HA GANADO.
+36.- TODOS LOS TRABAJADORES DE SEVILLA PASAN A LA TIENDA JOYMON
+*/
