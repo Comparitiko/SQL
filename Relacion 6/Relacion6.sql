@@ -289,16 +289,62 @@ HAVING SUM(precio) = (
 );
 
 /* 16.- SALARIO Y NOMBRE DE TODOS LOS QUE VENDIERON BOMBILLAS. */
-SELECT DISTINCT v.salario
+SELECT DISTINCT v.nom_vend, v.salario
 FROM vendedores v
-JOIN 
+JOIN vendart va ON va.id_vend = v.id_vend
+JOIN articulos a ON a.id_art = va.id_art
+WHERE a.nom_art = 'Bombilla';
+
+/* 17.- TIENDAS Y CIUDAD DONDE SE VENDIO ALGUNA RADIO. */
+SELECT DISTINCT t.nom_tienda, c.nom_ciudad
+FROM tiendas t
+JOIN ciudades c ON c.id_ciudad = t.id_ciudad
+JOIN vendedores v ON v.id_tienda = t.id_tienda
+JOIN vendart va ON va.id_vend = v.id_vend
+JOIN articulos a ON a.id_art = va.id_art
+WHERE a.nom_art = 'Radio';
+
+/* 18.- SUBIR EL SUELDO UN 2% A LOS EMPLEADOS DE SEVILLA */
+UPDATE vendedores
+SET salario = salario * 1.02
+WHERE id_tienda IN (
+	SELECT DISTINCT t.id_tienda
+    FROM tiendas t
+    JOIN ciudades c ON c.id_ciudad = t.id_ciudad
+    WHERE nom_ciudad = 'Sevilla'
+);
+
+/* 19.- BAJA EL SUELDO UN 1% A LOS QUE NO HAYAN VENDIDO LECHE */
+SET SQL_SAFE_UPDATES = 0;
+
+UPDATE vendedores
+SET salario = salario * 1.01
+WHERE id_vend NOT IN (
+	SELECT DISTINCT va.id_vend
+    FROM vendart va
+    JOIN articulos a ON a.id_art = va.id_art
+    WHERE a.nom_art = 'Leche'
+);
+
+/* 20.- SUBIR EL PRECIO UN 3% AL ARTICULO MAS VENDIDO */
+UPDATE articulos
+SET precio = precio * 1.03
+WHERE id_art IN (
+		SELECT id_art
+        FROM vendart
+        GROUP BY id_art
+		HAVING COUNT(id_art) = (
+			SELECT COUNT(id_art)
+            FROM vendart
+            GROUP BY id_art
+            ORDER BY 1 DESC
+            LIMIT 1
+        )
+);
+
+/* 21.- SUBIR EL SUELDO UN 2% A LOS ARTICULOS DE TIPO MAS VENDIDO */
 
 /*
-17.- TIENDAS Y CIUDAD DONDE SE VENDIO ALGUNA RADIO.
-18.- SUBIR EL SUELDO UN 2% A LOS EMPLEADOS DE SEVILLA
-19.- BAJA EL SUELDO UN 1% A LOS QUE NO HAYAN VENDIDO LECHE
-20.- SUBIR EL PRECIO UN 3% AL ARTICULO MAS VENDIDO
-21.- SUBIR EL SUELDO UN 2% A LOS ARTICULOS DE TIPO MAS VENDIDO
 22.- BAJAR UN 3% TODOS LOS ARTICULOS DE PAPELERIA
 23.- SUBIR EL PRECIO UN 1% A TODOS LOS ARTICULOS VENDIDOS EN ALMERIA
 24.- BAJAR EL PRECIO UN 5% AL ARTICULO QUE MAS HACE QUE NO SE VENDE
