@@ -343,6 +343,26 @@ WHERE id_art IN (
 );
 
 /* 21.- SUBIR EL SUELDO UN 2% A LOS ARTICULOS DE TIPO MAS VENDIDO */
+UPDATE articulos
+SET precio = precio * 1.02
+WHERE id_tipo IN (
+	SELECT ti.id_tipo
+    FROM (
+		SELECT ti2.id_tipo
+        FROM tiposart ti2
+		JOIN articulos a  ON ti.id_tipo = a.id_tipo
+		GROUP BY a.id_tipo
+		HAVING SUM(a.precio) = (
+			SELECT SUM(a.precio)
+			FROM articulos a
+			JOIN tiposart ti ON ti.id_tipo = a.id_tipo
+			GROUP BY a.id_tipo
+			ORDER BY 1
+			LIMIT 1
+		) AS subquery
+    )
+);
+
 
 
 /*
